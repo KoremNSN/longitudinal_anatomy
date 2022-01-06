@@ -41,6 +41,7 @@ library('heplots')
 ```{r}
 aseg <- read.csv('./data/aseg_stats211222.txt', sep = '\t')
 clinical <- read_sav('./data/Final Dataset 4.11.21.sav')
+clinical$Clinical_Trajectory <-  as.factor(clinical$Clinical_Trajectory)
 
 aseg_t1 = aseg[!grepl("long", aseg$Measure.volume),]
 aseg_t1 = aseg_t1[!grepl("T2", aseg_t1$Measure.volume),]
@@ -55,7 +56,7 @@ combine by sub
 
 ```{r}
 aseg_t1 <- merge(aseg_t1, clinical[,1:5], by='sub')
-aseg_t1_PTSD <- subset(aseg_t1, Clinical_Trajectory > 1)
+aseg_t1_PTSD <- subset(aseg_t1, Clinical_Trajectory != '1')
 ```
 
 run a model model to look for differances in hippocampus and amygdala in T1
@@ -102,10 +103,10 @@ hr_sr <- merge(hr_sr, clinical[,1:5], by='sub')
 al_sr <- merge(al_sr, clinical[,1:5], by='sub')
 ar_sr <- merge(ar_sr, clinical[,1:5], by='sub')
 
-hl_sr <- subset(hl_sr, Clinical_Trajectory > 1)
-hr_sr <- subset(hr_sr, Clinical_Trajectory > 1)
-al_sr <- subset(al_sr, Clinical_Trajectory > 1)
-ar_sr <- subset(ar_sr, Clinical_Trajectory > 1)
+hl_sr <- subset(hl_sr, Clinical_Trajectory != '1')
+hr_sr <- subset(hr_sr, Clinical_Trajectory != '1')
+al_sr <- subset(al_sr, Clinical_Trajectory != '1')
+ar_sr <- subset(ar_sr, Clinical_Trajectory != '1')
 ```
 
 Amygdala sub-regions analysis
@@ -220,19 +221,19 @@ aseg_long['sub'] <- (str_split_fixed(aseg_long$Measure.volume, ".long.", 2)[,2])
 aseg_long['time'] <- (str_split_fixed(aseg_long$Measure.volume, "_", 2)[,1])
 
 aseg_long <- merge(aseg_long, clinical[,1:5], by='sub')
-aseg_long_PTSD <- subset(aseg_long, Clinical_Trajectory > 1)
+aseg_long_PTSD <- subset(aseg_long, Clinical_Trajectory != '1')
 ```
 
 # LMM analysis
 
 ```{r}
-Model_LA_long <- lmer(Left.Amygdala ~ 0 + Clinical_Trajectory * time + Age + Gender + EstimatedTotalIntraCranialVol +(1|sub), data = aseg_long_PTSD)
+Model_LA_long <- lmer(Left.Amygdala ~ Clinical_Trajectory * time + Age + Gender + EstimatedTotalIntraCranialVol +(1|sub), data = aseg_long_PTSD)
 
-Model_RA_long <- lmer(Right.Amygdala ~ 0 + Clinical_Trajectory * time + Age + Gender + EstimatedTotalIntraCranialVol + (1|sub), data = aseg_long_PTSD)
+Model_RA_long <- lmer(Right.Amygdala ~ Clinical_Trajectory * time + Age + Gender + EstimatedTotalIntraCranialVol + (1|sub), data = aseg_long_PTSD)
 
-Model_LH_long <- lmer(Left.Hippocampus ~ 0 + Clinical_Trajectory * time + Age + Gender + EstimatedTotalIntraCranialVol + (1|sub), data = aseg_long_PTSD)
+Model_LH_long <- lmer(Left.Hippocampus ~ Clinical_Trajectory * time + Age + Gender + EstimatedTotalIntraCranialVol + (1|sub), data = aseg_long_PTSD)
 
-Model_RH_long <- lmer(Right.Hippocampus ~ 0 + Clinical_Trajectory * time + Age + Gender + EstimatedTotalIntraCranialVol + (1|sub), data = aseg_long_PTSD)
+Model_RH_long <- lmer(Right.Hippocampus ~ Clinical_Trajectory * time + Age + Gender + EstimatedTotalIntraCranialVol + (1|sub), data = aseg_long_PTSD)
 
 ```
 
@@ -260,26 +261,26 @@ amygdala['time'] <- str_split_fixed(amygdala$Subject, "_", 2)[,1]
 amygdala['sub']  <- str_split_fixed(amygdala$Subject, "long.", 2)[,2]
 
 amygdala <- merge(amygdala, clinical[,1:5], by='sub')
-amygdala_PTSD <- subset(amygdala, Clinical_Trajectory > 1)
+amygdala_PTSD <- subset(amygdala, Clinical_Trajectory != '1')
 
 hippocampus <- merge(hippocampus, clinical[,1:5], by='sub')
-hippocampus_PTSD <- subset(hippocampus, Clinical_Trajectory > 1)
+hippocampus_PTSD <- subset(hippocampus, Clinical_Trajectory != '1')
 ```
 
 # Amygdala sub region LMM analysis
 
 ```{r}
-Model_LA_ln_long <- lmer(left_Lateral.nucleus ~ 0 + Clinical_Trajectory * time + Age + Gender + left_Whole_amygdala + (1|sub), data = amygdala_PTSD)
+Model_LA_ln_long <- lmer(left_Lateral.nucleus ~ Clinical_Trajectory * time + Age + Gender + left_Whole_amygdala + (1|sub), data = amygdala_PTSD)
 
-Model_LA_bn_long <- lmer(left_Basal.nucleus ~ 0 + Clinical_Trajectory * time + Age + Gender + left_Whole_amygdala + (1|sub), data = amygdala_PTSD)
+Model_LA_bn_long <- lmer(left_Basal.nucleus ~ Clinical_Trajectory * time + Age + Gender + left_Whole_amygdala + (1|sub), data = amygdala_PTSD)
 
-Model_LA_cn_long <- lmer(left_Central.nucleus ~ 0 + Clinical_Trajectory * time + Age + Gender + left_Whole_amygdala + (1|sub), data = amygdala_PTSD)
+Model_LA_cn_long <- lmer(left_Central.nucleus ~ Clinical_Trajectory * time + Age + Gender + left_Whole_amygdala + (1|sub), data = amygdala_PTSD)
 
-Model_RA_ln_long <- lmer(right_Lateral.nucleus ~ 0 + Clinical_Trajectory * time + Age + Gender + right_Whole_amygdala + (1|sub), data = amygdala_PTSD)
+Model_RA_ln_long <- lmer(right_Lateral.nucleus ~ Clinical_Trajectory * time + Age + Gender + right_Whole_amygdala + (1|sub), data = amygdala_PTSD)
 
-Model_RA_bn_long <- lmer(right_Basal.nucleus ~ 0 + Clinical_Trajectory * time + Age + Gender + right_Whole_amygdala + (1|sub), data = amygdala_PTSD)
+Model_RA_bn_long <- lmer(right_Basal.nucleus ~ Clinical_Trajectory * time + Age + Gender + right_Whole_amygdala + (1|sub), data = amygdala_PTSD)
 
-Model_RA_cn_long <- lmer(right_Central.nucleus ~ 0 + Clinical_Trajectory * time + Age + Gender + right_Whole_amygdala + (1|sub), data = amygdala_PTSD)
+Model_RA_cn_long <- lmer(right_Central.nucleus ~ Clinical_Trajectory * time + Age + Gender + right_Whole_amygdala + (1|sub), data = amygdala_PTSD)
 ```
 
 ```{r}
