@@ -5,8 +5,8 @@ library(ggthemes)
 library(cowplot)
 library(here)
 
-file = "aseg_t1"
-indir <- paste0("data/",file,".RData")
+file = "aseg"
+indir <- paste0("../data/",file,".RData")
 load(indir)
 
 aa <- fixef(fm, summary = FALSE)/SCALE
@@ -19,9 +19,8 @@ psROI <- function(aa, bb, tm) {
   return(ps)
 }
 
-outdir <- paste0("results/",file,"/")
+outdir <- paste0("../results/",file,"/")
 if (!dir.exists(outdir)){dir.create(outdir,recursive = TRUE)}
-
 
 # generates ridge plots for effects (Intercept, cond, TRAIT and STATE), and saves them.
 for (ii in 1:length(EOIq)){
@@ -30,11 +29,12 @@ for (ii in 1:length(EOIq)){
               col.names = TRUE, row.names = FALSE)
 }
 
-rois <- c("Left Amygdala", "Left Hippocampus", "Right Amygdala", "Right Hippocampus") # Change the ROI name for the image
+rois <- c("Left BA", "Left CA1", "Left CA3", "Left CeA", "Left DG", "Left LA", "Left Subiculum",
+          "Right BA", "Right CA1", "Right CA3", "Right CeA", "Right DG", "Right LA", "Right Subiculum") # Change the ROI name for the image
 
 df <- read.table(file = paste0(outdir,'Clinical_Trajectory3_post.txt'), sep = "", header = TRUE)
 fig_title = "Clinical Trajectory"
-fig_name = "results/GroupTime .png"
+fig_name = "../results/T1_group_sub.png"
 
 df$X <- NULL
 colnames(df) <- rois
