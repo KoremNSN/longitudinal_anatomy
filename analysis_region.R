@@ -3,25 +3,27 @@ require(tidyverse)
 require(parallel)
 require(reshape2)
 
-T1 = TRUE
+setwd(dir = '~/Documents/hippocampus/longitudinal_anatomy/')
+T1 = FALSE
 filename = 'aseg'
-db = read_csv(paste0('raw/db_',filename,'.csv'))
+db = read.csv(paste0('raw/db_',filename,'.csv'))
 if (T1){
   db = subset(db, time == 'T1')
-  mod = '1 + Clinical_Trajectory + Age + Gender + EstimatedTotalIntraCranialVol'
+  mod = '1 + caps + Age + Gender + EstimatedTotalIntraCranialVol'
   ext = '_t1'
+  
 } else {
   mod = '1 + time * Clinical_Trajectory + Age + Gender + EstimatedTotalIntraCranialVol'
   ext = ''
 }
 
-iterations <- 4e4
+iterations <- 1e4
 chains <- 4
 SCALE <- 1
 ns <- iterations*chains/2
 
 db['sub']  <- factor(db$sub)
-db['Clinical_Trajectory'] <- factor(db$Clinical_Trajectory)
+#db['Clinical_Trajectory'] <- factor(db$Clinical_Trajectory)
 db['ROI'] <- factor(db$ROI)
 
 # number of ROIs
@@ -72,4 +74,4 @@ fm <- brm(modelForm,
           cores = 4,
           control = list(adapt_delta = 0.99, max_treedepth = 15))
 
-save.image(file=paste0(outdir,filename,ext,'.RData'))
+save.image(file=paste0(outdir,filename,ext,'caps.RData'))

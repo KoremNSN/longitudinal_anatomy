@@ -1,11 +1,13 @@
 library(brms)
 library(tidyverse) 
+library(ggplot2)
 library(ggridges)
 library(ggthemes)
 library(cowplot)
 library(here)
 
-file = "aseg_t1"
+setwd(dir = '~/Documents/hippocampus/longitudinal_anatomy/')
+file = "asegcaps"
 indir <- paste0("data/",file,".RData")
 load(indir)
 
@@ -32,9 +34,9 @@ for (ii in 1:length(EOIq)){
 
 rois <- c("Left Amygdala", "Left Hippocampus", "Right Amygdala", "Right Hippocampus") # Change the ROI name for the image
 
-df <- read.table(file = paste0(outdir,'Clinical_Trajectory3_post.txt'), sep = "", header = TRUE)
-fig_title = "Clinical Trajectory"
-fig_name = "results/GroupTime .png"
+df <- read.table(file = paste0(outdir,'Clinical_Trajectory_post.txt'), sep = "", header = TRUE)
+fig_title = "CT"
+fig_name = "results/CTcaps.png"
 
 df$X <- NULL
 colnames(df) <- rois
@@ -92,8 +94,8 @@ intercept <- ggplot(df.long, aes(x = Y, y = as.numeric(reorder(index,p)), group 
                                ticks.colour = "black")) +
   theme_stata() +
   theme(
-    plot.background = element_blank(),
-    panel.background = element_blank(),
+    plot.background = element_rect(fill = "transparent", color = NA),
+    panel.background = element_rect(fill = "transparent", color = NA),
     panel.grid.major.y = element_line(color = "lightgray", size = .75),
     plot.title = element_text(size = 12.5, margin = unit(c(0,0.1,.25,02),"cm"), face = "plain", hjust = 0.5),
     legend.title = element_text(size = 11, hjust = 0),
@@ -121,6 +123,6 @@ plot <- ggdraw(intercept) +
   draw_text("Remission > non-Remission", x = .31, y = 0.015, size = 11) +
   draw_text("Remission < non-Remission", x = .74, y = 0.015, size = 11)
 
-ggsave(fig_name, plot = plot, dpi = 600, height = 120, width = 180, units = "mm")
+ggsave(fig_name, plot = plot, dpi = 600, height = 120, width = 180, units = "mm", bg='transparent')
 
 print("Done with Figure 3, onto the next...")
